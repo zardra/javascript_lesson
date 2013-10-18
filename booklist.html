@@ -1,0 +1,148 @@
+<html>
+    <head>
+
+    </head>
+    <body>
+        <h1>My Book List</h1>
+        <div id="container0"></div>
+        <div id="container1">
+            <!-- Book list displays here -->
+        </div>
+        <div id="container2">
+            <div id="form">
+                <h2>Enter a New Book</h2>
+                <label for="title">Title: </label>
+                <input id="title" type="text"><br />
+                <label for="author">Author: </label>
+                <input id="author" type="text"><br />
+                <label for="genre">Genre: </label>
+                <input id="genre" type="text"><br />
+                <button id="button">Submit</button>
+            </div>
+        </div>
+        <div id="container3">
+            <!-- Current Read goes here -->
+        </div>
+
+        <script>
+            var BookList = function(){
+                this.booksRead = [];
+                this.booksNotRead = [];
+                this.nextBook = undefined;
+                this.currentBook = undefined;
+                this.lastBook = undefined;
+                this.bookShelf = [];
+
+                this.add = function(book) {
+                    this.bookShelf.push(book);
+                    if (book.read === false) {
+                        this.booksNotRead.push(book);
+                        if (this.currentBook === undefined) {
+                            this.currentBook = book;
+                        }
+                        else if (this.nextBook === undefined) {
+                            this.nextBook = book;
+                        }
+                    }
+                    else {
+                        this.booksRead.push(book);
+                    }
+                };
+
+                this.finishCurrentBook = function() {
+                    this.booksRead.push(this.currentBook);
+                    this.booksNotRead.shift();
+                    this.currentBook.readOnDate(new Date(Date.now()));
+                    this.lastBook = this.currentBook;
+                    this.currentBook = this.nextBook;
+                    this.nextBook = this.booksNotRead[1];
+                };
+            };
+
+            var Book = function(title, author, genre) {
+                this.title = title;
+                this.author = author;
+                this.genre = genre;
+                this.read = false;
+                this.dateRead = "";
+
+                this.readOnDate = function(date) {
+                    this.dateRead = date;
+                    this.read = true;
+                };
+            };
+
+            var reading = new BookList();
+
+            var thrones = new Book("Game of Thrones", "George R R Martin", "Fantasy");
+            var prideAndPrejudice = new Book("Pride and Prejudice", "Jane Austen", "Fiction");
+            var crakeAndOryx = new Book("Crake and Oryx", "Margaret Atwood", "Sci-fi");
+            var scarletLetter = new Book("The Scarlet Letter", "Nathanel Hawthorne", "Fiction");
+            var neverwhere = new Book("Neverwhere", "Neil Gaiman", "Fantasy");
+            var americanGods = new Book("American Gods", "Neil Gaiman", "Fantasy");
+
+            reading.add(thrones);
+            reading.add(prideAndPrejudice);
+            reading.add(crakeAndOryx);
+            reading.add(scarletLetter);
+            reading.add(neverwhere);
+            reading.add(americanGods);
+
+            var pageNode = document.getElementById("container1");
+            var unordered = document.createElement("ul");
+            var breakPoint = document.createElement("br");
+
+            function iterateBooks() {
+                //var pageNode1 = document.getElementById("container1");
+                for (i = 0; i < reading.bookShelf.length; i++) {
+                    //var book = reading.bookShelf[i].title + " by " + reading.bookShelf[i].author;
+                    var newParagraph = document.createElement("p");
+                    var listItem = document.createElement("li");
+                    var paragraphText = document.createTextNode(reading.bookShelf[i].title + " by " + reading.bookShelf[i].author);
+                    //newParagraph.appendChild(paragraphText);
+                    //pageNode.appendChild(newParagraph); 
+                    listItem.appendChild(paragraphText);
+                    unordered.appendChild(listItem);
+                    pageNode.appendChild(unordered);
+               }  
+            }
+
+            var button = document.getElementById("button");
+
+            function enterBooks(event) {
+                var bookTitle = document.getElementById("title").value;
+                var bookAuthor = document.getElementById("author").value;
+                var bookGenre = document.getElementById("genre").value;
+
+                var bookVariable = new Book(bookTitle, bookAuthor, bookGenre);
+                var appendBook = reading.add(bookVariable);
+
+                var listItem = document.createElement("li");
+                var paragraphText = document.createTextNode(bookTitle + " by " + bookAuthor);
+                listItem.appendChild(paragraphText);
+                unordered.appendChild(listItem);
+                pageNode.appendChild(unordered);
+
+                document.getElementById("title").value = "";
+                document.getElementById("author").value = "";
+                document.getElementById("genre").value = "";
+            }
+            button.addEventListener("click", enterBooks, false);
+
+            // function currentRead() {
+            //     var pageNode3 = document.getElementById("container3");
+            //     var getCurrent = reading.currentBook.title + " by " + reading.currentBook.author;
+            //     var newParagraph = document.createElement("p");
+            //     var paragraphText = "You are currently reading: " + getCurrent;
+            //     newParagraph.appendChild(paragraphText);
+            //     pageNode3.appendChild(newParagraph); 
+            // }
+
+            iterateBooks();
+            // currentRead();
+
+
+
+        </script>
+    </body>
+</html>
